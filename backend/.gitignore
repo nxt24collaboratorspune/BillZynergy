@@ -23,3 +23,4 @@ htmlcov/
 instance/
 upload/
 output/
+db_scripts/
