@@ -25,4 +25,5 @@ COPY src/ ./src/
 EXPOSE 8000
 
 # Run FastAPI application with uvicorn
+# uvicorn src.app:app --host 0.0.0.0 --port 8000
 CMD ["uvicorn", "src.app:app", "--host", "0.0.0.0", "--port", "8000"]
