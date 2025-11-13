@@ -7,6 +7,7 @@ from glob import glob
 from pathlib import Path
 import shutil
 from dotenv import load_dotenv
+import pandas as pd
 
 # INternal Imports
 from src.agent01_parser.data_parser import parser_agent
@@ -98,6 +99,7 @@ def upload_file(file: UploadFile = File(...)):
             status_code=500
         )
 
+
 @app.get("/upload-contents")
 def get_upload_contents():
     """Get list of files and directories in the upload folder"""
@@ -161,6 +163,7 @@ def extract_file():
             status_code=500
         )
 
+
 @app.get("/matching")
 def matching():
     """Extract a zip file"""
@@ -203,9 +206,34 @@ def descripency():
 def explanation_report():
     pass
 
+
 @app.get("/audit_trail_agent")
 def audit_trail_agent():
     pass
+
+
+@app.get("/show_discrepency_tbl")
+def show_discrepency_tbl():
+    """Extract a zip file"""
+    try:
+        # Funccall
+        df = pd.read_csv(
+            "./output/Discrepancy.csv"
+        ).to_html() if os.path.exists(
+            "./output/Discrepancy.csv"
+        ) else pd.DataFrame().to_html()
+
+        # Your logic here
+        return JSONResponse(
+            content={"message": "Success", "df": df},
+            status_code=200
+        )
+    except Exception as e:
+        return JSONResponse(
+            content={"error": str(e) + str(glob("./output/*")[0])},
+            status_code=500
+        )
+
 
 @app.get("/")
 def root():

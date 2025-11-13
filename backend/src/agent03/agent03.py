@@ -20,8 +20,10 @@ def agent03():
     # Optional: Display only flagged rows
     Discrepancy_df_llm = merged_1[merged_1['Has_Discrepancy'] == True]
     
+    merged_1['Has_Discrepancy'] = merged_1['Has_Discrepancy'].map({True: "Discrepancy", False: "No Discrepancy"})
+
     Discrepancy_df_1 = Discrepancy_df_llm[['Invoice_No', 'Client_Name', 'Vendor', 'Campaign_Id','Billed_Cost', 'Ad_Cost', 'Served_Impressions','Served_Clicks', 'Media_budget', 'Planned_Impression','Has_Discrepancy']]
     Discrepancy_df_1.to_csv("./output/Discrepancy.csv")
     Discrepancy_df_llm.to_csv("./output/Discrepancy_llm.csv")
     
-    return Discrepancy_df_llm.to_html()
+    return Discrepancy_df_1.to_html()
