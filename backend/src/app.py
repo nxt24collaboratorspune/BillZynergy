@@ -7,7 +7,7 @@ import shutil
 
 
 app = FastAPI()
-
+print("version 1.2")
 UPLOAD_DIR = Path(__file__).resolve().parent.parent / "upload"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 CHUNK_SIZE = 1024 * 1024
@@ -28,6 +28,7 @@ def _next_destination(extension: str) -> Path:
 
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
+    print("upload function called")
     try:
         if not file.filename:
             return JSONResponse(
