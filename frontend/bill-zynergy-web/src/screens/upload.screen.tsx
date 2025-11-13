@@ -56,16 +56,18 @@ const Upload: FC = () => {
   const uploadFiles = async (fileArray: File[]) => {
     try {
       setLoading(true);
+        if (fileArray.length === 0) return;
 
       const formData = new FormData();
-      fileArray.forEach((file) => formData.append("files", file));
+       formData.append("file", fileArray[0]);
+      // fileArray.forEach((file) => formData.append("files", file));
 
       const response = await fetch("https://app-billzynergy-backend-dev.azurewebsites.net/upload", {
         method: "POST",
         body: formData,
-        headers: {
-          Accept: "application/json",
-        },
+        // headers: {
+        //   Accept: "application/json",
+        // },
       });
 
       if (!response.ok) {
