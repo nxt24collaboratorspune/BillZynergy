@@ -1,0 +1,254 @@
+/* Page layout */
+.dashboard-root {
+    flex: 1;
+    background-color: var(--grey-100);
+    padding-block: 40px;
+}
+
+.dashboard-container {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding-inline: 24px;
+}
+
+.dashboard-title {
+    font-weight: 700 !important;
+    font-size: 28px !important;
+    margin-bottom: 24px !important;
+}
+
+/* Summary cards row */
+.dashboard-summary-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+/* Each summary column */
+.summary-item {
+    flex: 1 1 240px;
+}
+
+/* Summary card */
+.summary-card {
+    border-radius: 16px !important;
+    padding: 18px 20px;
+    border: 1px solid var(--grey-200);
+    box-shadow: none !important;
+    background-color: var(--secondary-color);
+}
+
+.summary-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.summary-card-title {
+    font-size: 14px !important;
+    color: var(--grey-500) !important;
+}
+
+.summary-card-icon {
+    font-size: 20px !important;
+    color: var(--grey-400);
+}
+
+.summary-card-icon.warning {
+    color: var(--red-color);
+}
+
+.summary-card-icon.success {
+    color: #22c55e;
+}
+
+.summary-card-value {
+    font-size: 28px !important;
+    font-weight: 700 !important;
+    margin-bottom: 4px !important;
+    color: var(--primary-color);
+}
+
+.summary-card-caption {
+    font-size: 12px !important;
+    color: var(--grey-500) !important;
+}
+
+/* Details card */
+.details-card {
+    border-radius: 16px !important;
+    border: 1px solid var(--grey-200);
+    box-shadow: none !important;
+    background-color: var(--secondary-color);
+    padding: 20px 24px 16px 24px;
+}
+
+.details-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.details-title {
+    font-weight: 600 !important;
+    font-size: 16px !important;
+}
+
+.details-filter-btn {
+    text-transform: none !important;
+    border-radius: 999px !important;
+    font-size: 13px !important;
+    padding-inline: 14px !important;
+}
+
+/* Table header / rows */
+.details-table-header {
+    display: grid;
+    grid-template-columns: 1.4fr 2.4fr 1.3fr 1.3fr 1.3fr;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--grey-200);
+}
+
+.details-header-cell {
+    font-size: 12px !important;
+    color: var(--grey-500) !important;
+}
+
+.details-header-cell.right {
+    text-align: right;
+}
+
+.details-table-row {
+    display: grid;
+    grid-template-columns: 1.4fr 2.4fr 1.3fr 1.3fr 1.3fr;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--grey-100);
+}
+
+.details-cell {
+    font-size: 14px !important;
+    color: var(--grey-800) !important;
+}
+
+.details-cell.right {
+    text-align: right;
+}
+
+/* Status chips */
+.status-chip {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    border-radius: 999px !important;
+}
+
+.status-reconciled {
+    background-color: var(--green-color-light) !important;
+    color: var(--green-color-dark) !important;
+}
+
+.status-discrepancy {
+    background-color: var(--red-color-light) !important;
+    color: var(--red-color) !important;
+}
+
+.status-pending {
+    background-color: #bfdbfe !important;
+    color: #1d4ed8 !important;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding-inline: 16px;
+    }
+
+    .details-table-header,
+    .details-table-row {
+        grid-template-columns: 1.6fr 2.4fr 1.4fr;
+        grid-template-areas:
+            "invoice vendor amount"
+            "date date status";
+        row-gap: 4px;
+    }
+}
+
+/* Add 1 more column (Preview) */
+.details-table-header,
+.details-table-row {
+    grid-template-columns: 1.4fr 2.4fr 1.3fr 1.3fr 1.3fr 1fr;
+}
+
+/* Icon button styling */
+.preview-icon-btn {
+    color: var(--grey-600);
+    transition: 0.2s;
+}
+
+.preview-icon-btn:hover {
+    color: var(--primary-color);
+}
+
+.filters-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+/* Search input */
+.filter-input {
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: 1px solid var(--grey-300);
+    width: 210px;
+}
+
+/* Dropdown selects */
+.filter-select {
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: 1px solid var(--grey-300);
+    background: white;
+    width: 170px;
+}
+
+/* Date range */
+.filter-date-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.filter-date {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid var(--grey-300);
+    border-radius: 6px;
+}
+
+.filter-date-separator {
+    font-size: 14px;
+    color: var(--grey-500);
+}
+
+.filter-slider-wrapper {
+  min-width: 260px;
+  flex: 1 1 260px;
+}
+
+.filter-label {
+  font-size: 12px !important;
+  color: var(--grey-500) !important;
+  margin-bottom: 4px !important;
+}
+
+.date-range-slider {
+  padding-inline: 4px;
+}
+

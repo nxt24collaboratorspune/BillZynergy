@@ -5,6 +5,10 @@
   justify-content: center;
   padding-block: 100px;
   background-color: var(--grey-100);
+  /* background-image: url('/texture.png'); */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .welcome-container {
@@ -35,18 +39,14 @@
 
 .welcome-video-card {
   width: 100%;
-  /* max-width: 100%; */
-  min-height: 300px;
   margin-inline: auto;
   margin-bottom: 32px;
   border-radius: 16px !important;
   overflow: hidden;
-  /* important */
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--grey-200);
-  margin-bottom: 20px;
 }
 
 
@@ -84,7 +84,7 @@
 
 /* Primary CTA button */
 .welcome-upload-btn {
-   width: 100% !important;
+  width: 100% !important;
   text-transform: none !important;
   border-radius: 999px !important;
   padding-inline: 32px !important;

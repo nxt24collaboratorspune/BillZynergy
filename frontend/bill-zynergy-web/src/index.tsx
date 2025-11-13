@@ -19,12 +19,19 @@ root.render(
       {`
           :root {
             --primary-color: ${theme.palette.primary.main};
+            --primary-color-light: ${theme.palette.primary.light};
             --secondary-color: ${theme.palette.secondary.main};
             --grey-500: ${theme.palette.grey[500]};
             --grey-800: ${theme.palette.grey[800]};
+            --grey-600: ${theme.palette.grey[600]};
             --grey-200: ${theme.palette.grey[200]};
             --grey-100: ${theme.palette.grey[100]};
             --grey-300: ${theme.palette.grey[300]};
+            --red-color: ${theme.palette.red.main};
+            --red-color-light: ${theme.palette.red.light};
+            --green-color-dark: ${theme.palette.green.dark};
+            --green-color-light: ${theme.palette.green.light};
+            --green-color: ${theme.palette.green.main};
           }
         `}
     </style>

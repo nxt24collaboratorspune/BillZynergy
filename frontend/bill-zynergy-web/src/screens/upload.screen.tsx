@@ -20,37 +20,72 @@ import { paths } from "../helper";
 const Upload: FC = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [files, setFiles] = useState<File[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const handleBrowseClick = () => {
-    fileInputRef.current?.click();
+    fileInputRef?.current?.click();
   };
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const fileList = event.target.files;
+  // When user selects files from browse
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const fileList = event?.target?.files;
+
     const selected: File[] = fileList ? Array.from(fileList) : [];
     setFiles(selected);
+
+    if (selected?.length > 0) {
+      await uploadFiles(selected);
+    }
   };
 
-  const handleDrop = (event: DragEvent<HTMLDivElement>) => {
+  const handleDrop = async (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     const fileList = event.dataTransfer.files;
     const dropped: File[] = fileList ? Array.from(fileList) : [];
     setFiles(dropped);
+
+    if (dropped.length > 0) {
+      await uploadFiles(dropped);
+    }
   };
 
   const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
   };
 
-  const handleRunReconciliation = () => {
-    // TODO: hook this to your upload / API call
-    console.log("Run AI Reconciliation with files:", files);
+  const uploadFiles = async (fileArray: File[]) => {
+    try {
+      setLoading(true);
+
+      const formData = new FormData();
+      fileArray.forEach((file) => formData.append("files", file));
+
+      const response = await fetch("https://app-billzynergy-backend-dev.azurewebsites.net/upload", {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log("Upload success:", data);
+      alert("Files uploaded successfully!");
+    } catch (error) {
+      console.error("Upload error:", error);
+      alert("File upload failed!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <Box className="upload-root">
       <Box className="upload-container">
-        {/* Breadcrumbs */}
         <Breadcrumbs
           aria-label="breadcrumb"
           className="upload-breadcrumbs"
@@ -59,17 +94,13 @@ const Upload: FC = () => {
           <Link underline="hover" color="inherit" href={paths?.welcome}>
             Home
           </Link>
-          <Link underline="hover" color="inherit" href={paths?.welcome}>
-            <Typography color="text.primary">Upload</Typography>
-          </Link>
+          <Typography color="text.primary">Upload</Typography>
         </Breadcrumbs>
 
-        {/* Title */}
         <Typography variant="h4" className="upload-title">
-          Upload Invoice Files
+          Upload Invoice
         </Typography>
 
-        {/* Dropzone Card */}
         <Card
           elevation={0}
           className="upload-dropzone"
@@ -78,25 +109,22 @@ const Upload: FC = () => {
         >
           <Box className="upload-dropzone-inner">
             <CloudUploadOutlinedIcon className="upload-icon" />
-
             <Typography variant="body1" className="upload-main-text">
               Drag and drop your invoice files here
             </Typography>
-
             <Typography variant="body2" className="upload-or-text">
               or
             </Typography>
-
             <Button
-              variant="outlined"
+              variant="contained"
               size="small"
               className="upload-browse-btn"
               onClick={handleBrowseClick}
+              disabled={loading}
             >
-              Browse Files
+              {loading ? "Uploading..." : "Browse"}
             </Button>
 
-            {/* hidden file input */}
             <input
               type="file"
               multiple
@@ -107,18 +135,6 @@ const Upload: FC = () => {
           </Box>
         </Card>
 
-        {/* Run button */}
-        <Button
-          variant="contained"
-          size="large"
-          className="upload-run-btn"
-          onClick={handleRunReconciliation}
-          disabled={files.length === 0}
-        >
-          Run AI Reconciliation
-        </Button>
-
-        {/* Optional tiny files list */}
         {files.length > 0 && (
           <Typography variant="caption" className="upload-files-caption">
             {files.length} file(s) selected
