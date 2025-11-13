@@ -1,10 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from .app import router as upload_router
-
 app = FastAPI()
-app.include_router(upload_router)
 
 class Message(BaseModel):
     text: str
