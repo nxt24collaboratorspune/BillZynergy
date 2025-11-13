@@ -38,6 +38,7 @@ const invoiceData: InvoiceRow[] = [
         amount: "$1,250.00",
         date: "2023-11-15",
         status: "Reconciled",
+        fileUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
     },
     {
         id: "INV-2023-002",
@@ -45,6 +46,7 @@ const invoiceData: InvoiceRow[] = [
         amount: "$780.50",
         date: "2023-11-18",
         status: "Discrepancy",
+        fileUrl: "https://file-examples.com/wp-content/uploads/2017/10/file-example_PDF_1MB.pdf",
     },
     {
         id: "INV-2023-003",
@@ -52,6 +54,7 @@ const invoiceData: InvoiceRow[] = [
         amount: "$3,500.00",
         date: "2023-11-20",
         status: "Pending",
+        fileUrl: "https://people.sc.fsu.edu/~jburkardt/data/csv/biostats.csv"
     },
     {
         id: "INV-2023-004",
@@ -84,18 +87,18 @@ const invoiceData: InvoiceRow[] = [
 ];
 
 const Dashboard: React.FC = () => {
-    const [previewOpen, setPreviewOpen] = useState(false);
-    const [previewInvoice, setPreviewInvoice] = useState<InvoiceRow | null>(null);
+    // const [previewOpen, setPreviewOpen] = useState(false);
+    // const [previewInvoice, setPreviewInvoice] = useState<InvoiceRow | null>(null);
     const [statusFilter, setStatusFilter] = React.useState("All");
     const [vendorFilter, setVendorFilter] = React.useState("All");
     const [searchText, setSearchText] = React.useState("");
     const [startDate, setStartDate] = React.useState("");
     const [endDate, setEndDate] = React.useState("");
 
-    const handlePreview = (row: InvoiceRow) => {
-        setPreviewInvoice(row);
-        setPreviewOpen(true);
-    };
+    // const handlePreview = (row: InvoiceRow) => {
+    //     setPreviewInvoice(row);
+    //     setPreviewOpen(true);
+    // };
 
     const filteredInvoices = invoiceData.filter((row) => {
         // Status Filter
@@ -117,6 +120,14 @@ const Dashboard: React.FC = () => {
         return true;
     });
 
+
+    const handleOpenInvoice = (row: InvoiceRow) => {
+  if (!row.fileUrl) {
+    alert("No file available for this invoice yet.");
+    return;
+  }
+  window.open(row.fileUrl, "_blank", "noopener,noreferrer");
+};
 
     return (
         <Box className="dashboard-root">
@@ -283,7 +294,7 @@ const Dashboard: React.FC = () => {
                             </Box>
                             <Box className="details-cell right">
                                 <IconButton
-                                    onClick={() => handlePreview(row)}
+                                    onClick={() => handleOpenInvoice(row)}
                                     className="preview-icon-btn"
                                     size="small"
                                 >
@@ -294,26 +305,6 @@ const Dashboard: React.FC = () => {
                     ))}
                 </Card>
             </Box>
-
-            <Dialog open={previewOpen} onClose={() => setPreviewOpen(false)} maxWidth="md" fullWidth>
-                <DialogTitle>
-                    Preview – {previewInvoice?.id}
-                </DialogTitle>
-
-                <DialogContent>
-                    <Typography variant="body2" sx={{ mb: 2 }}>
-                        Vendor: {previewInvoice?.vendor}
-                    </Typography>
-
-                    {/* You can embed PDF, image or video preview here */}
-                    <Box sx={{ p: 2, border: "1px solid #e5e7eb", borderRadius: 2 }}>
-                        <Typography variant="body1" color="text.secondary">
-                            (Preview content will appear here)
-                        </Typography>
-                    </Box>
-                </DialogContent>
-            </Dialog>
-
         </Box>
     );
 };
