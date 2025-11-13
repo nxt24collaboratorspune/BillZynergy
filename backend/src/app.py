@@ -3,9 +3,16 @@ from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import os
+from glob import glob
 from pathlib import Path
 import shutil
+from dotenv import load_dotenv
 
+# INternal Imports
+from src.agent01_parser.data_parser import parser_agent
+
+# Load ENV FIles
+load_dotenv()
 
 app = FastAPI()
 
@@ -41,7 +48,7 @@ def _next_destination(extension: str) -> Path:
 
 
 @app.post("/upload")
-async def upload_file(file: UploadFile = File(...)):
+def upload_file(file: UploadFile = File(...)):
     print("upload function called")
     try:
         if not file.filename:
@@ -57,14 +64,20 @@ async def upload_file(file: UploadFile = File(...)):
         size = 0
 
         with destination.open("wb") as buffer:
+            # Use the underlying file object for synchronous reads
+            uploaded = file.file
             while True:
-                chunk = await file.read(CHUNK_SIZE)
+                chunk = uploaded.read(CHUNK_SIZE)
                 if not chunk:
                     break
                 size += len(chunk)
                 buffer.write(chunk)
 
-        await file.close()
+        # Close the underlying file if possible
+        try:
+            file.file.close()
+        except Exception:
+            pass
 
         return JSONResponse(
             content={
@@ -83,7 +96,7 @@ async def upload_file(file: UploadFile = File(...)):
         )
 
 @app.get("/upload-contents")
-async def get_upload_contents():
+def get_upload_contents():
     """Get list of files and directories in the upload folder"""
     try:
         if not UPLOAD_DIR.exists():
@@ -126,6 +139,26 @@ async def get_upload_contents():
             status_code=500
         )
 
+
+@app.get("/extract-file")
+def extract_file():
+    """Extract a zip file"""
+    try:
+        # Funccall
+        parser_agent()
+
+        # Your logic here
+        return JSONResponse(
+            content={"message": "Success"},
+            status_code=200
+        )
+    except Exception as e:
+        return JSONResponse(
+            content={"error": str(e) + str(glob("./upload/*")[0])},
+            status_code=500
+        )
+
+
 @app.get("/")
-async def root():
+def root():
     return {"message": "File upload API is running"}
