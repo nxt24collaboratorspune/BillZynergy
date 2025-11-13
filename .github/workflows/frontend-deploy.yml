@@ -1,0 +1,74 @@
+name: Build and Deploy Frontend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/frontend-deploy.yml"
+      - "frontend/**"
+  workflow_dispatch:
+
+env:
+  ACR_NAME: acrbillzynergynxt24
+  ACR_LOGIN_SERVER: acrbillzynergynxt24.azurecr.io
+  AZURE_RESOURCE_GROUP: rg-billzynergy-nxt24
+  FRONTEND_IMAGE_NAME: billzynergy-frontend
+  FRONTEND_WEBAPP_NAME: app-billzynergy-frontend-dev
+
+jobs:
+  build-and-deploy:
+    name: Build container, push to ACR, deploy to App Service
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Determine API base URL
+        run: |
+          API_BASE_URL="${{ vars.FRONTEND_API_BASE_URL }}"
+          if [ -z "$API_BASE_URL" ]; then
+            API_BASE_URL="https://app-billzynergy-backend-dev.azurewebsites.net"
+          fi
+          echo "FRONTEND_API_BASE_URL=$API_BASE_URL" >> "$GITHUB_ENV"
+
+      - name: Log in to Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Log in to Azure Container Registry
+        run: az acr login --name ${{ env.ACR_NAME }}
+
+      - name: Build frontend image
+        run: |
+          IMAGE_TAG=${{ env.ACR_LOGIN_SERVER }}/${{ env.FRONTEND_IMAGE_NAME }}:${{ github.sha }}
+          docker build \
+            --build-arg REACT_APP_API_BASE_URL="$FRONTEND_API_BASE_URL" \
+            -t $IMAGE_TAG \
+            ./frontend/bill-zynergy-web
+          docker tag $IMAGE_TAG ${{ env.ACR_LOGIN_SERVER }}/${{ env.FRONTEND_IMAGE_NAME }}:latest
+          echo "FRONTEND_IMAGE=$IMAGE_TAG" >> "$GITHUB_ENV"
+
+      - name: Push frontend image
+        run: |
+          docker push $FRONTEND_IMAGE
+          docker push ${{ env.ACR_LOGIN_SERVER }}/${{ env.FRONTEND_IMAGE_NAME }}:latest
+
+      - name: Update frontend App Service container
+        env:
+          DOCKER_REGISTRY_SERVER_USER: ${{ secrets.ACR_USERNAME }}
+          DOCKER_REGISTRY_SERVER_PASSWORD: ${{ secrets.ACR_PASSWORD }}
+        run: |
+          az webapp config container set \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --name ${{ env.FRONTEND_WEBAPP_NAME }} \
+            --docker-custom-image-name $FRONTEND_IMAGE \
+            --docker-registry-server-url https://${{ env.ACR_LOGIN_SERVER }} \
+            --docker-registry-server-user "$DOCKER_REGISTRY_SERVER_USER" \
+            --docker-registry-server-password "$DOCKER_REGISTRY_SERVER_PASSWORD"
+
+          az webapp restart \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --name ${{ env.FRONTEND_WEBAPP_NAME }}

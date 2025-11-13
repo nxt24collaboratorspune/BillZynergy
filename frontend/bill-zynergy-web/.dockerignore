@@ -1,0 +1,15 @@
+# Dependencies
+node_modules
+npm-debug.log
+
+# Build artifacts
+build
+coverage
+
+# Git metadata
+.git
+.gitignore
+
+# OS files
+*.swp
+.DS_Store
