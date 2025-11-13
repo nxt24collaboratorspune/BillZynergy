@@ -1,5 +1,6 @@
 # Create uploads directory if it doesn't exist
 from fastapi import FastAPI, File, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import os
 from pathlib import Path
@@ -7,6 +8,19 @@ import shutil
 
 
 app = FastAPI()
+
+allowed_origins = [
+    "http://localhost:3000",
+    "https://app-billzynergy-frontend-dev.azurewebsites.net",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 print("version 1.2")
 UPLOAD_DIR = Path(__file__).resolve().parent.parent / "upload"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
