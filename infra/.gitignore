@@ -1,0 +1,20 @@
+# Terraform working directory artifacts
+.terraform/
+.terraform.tfstate.lock.info
+
+# State files
+terraform.tfstate
+terraform.tfstate.backup
+*.tfstate
+*.tfstate.*
+
+# Crash reports
+crash.log
+crash.*.log
+
+# Overrides / local variables
+override.tf
+override.tf.json
+terraform.tfvars
+*.tfvars
+*.tfvars.json
