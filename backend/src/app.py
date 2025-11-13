@@ -10,6 +10,8 @@ from dotenv import load_dotenv
 
 # INternal Imports
 from src.agent01_parser.data_parser import parser_agent
+from src.agent02.agent02 import agent02
+
 
 # Load ENV FIles
 load_dotenv()
@@ -158,6 +160,37 @@ def extract_file():
             status_code=500
         )
 
+@app.get("/matching")
+def matching():
+    """Extract a zip file"""
+    try:
+        # Funccall
+        df = agent02()
+
+        # Your logic here
+        return JSONResponse(
+            content={"message": "Success", "df": df},
+            status_code=200
+        )
+    except Exception as e:
+        return JSONResponse(
+            content={"error": str(e) + str(glob("./upload/*")[0])},
+            status_code=500
+        )
+
+
+@app.get("/descripency")
+def descripency():
+    pass
+
+
+@app.get("/explanation-report")
+def explanation_report():
+    pass
+
+@app.get("/audit_trail_agent")
+def audit_trail_agent():
+    pass
 
 @app.get("/")
 def root():
