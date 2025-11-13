@@ -1,0 +1,136 @@
+.upload-root {
+  flex: 1;
+  background-color: #f4f5f7;
+  display: flex;
+  justify-content: center;
+  padding-block: 32px;
+}
+
+.upload-container {
+  max-width: 960px;
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+
+/* Breadcrumbs */
+.upload-breadcrumbs {
+  font-size: 12px;
+  margin-bottom: 16px;
+}
+
+/* Title */
+.upload-title {
+  font-weight: 700 !important;
+  font-size: 28px !important;
+  margin-bottom: 24px !important;
+}
+
+/* Dropzone */
+.upload-dropzone {
+  border-radius: 0 !important;
+  border: 2px solid #c4b5fd !important;       /* soft purple */
+  background-color: #ffffff !important;
+  min-height: 260px;
+  margin-bottom: 24px;
+  box-shadow: none !important;
+  position: relative;
+}
+
+/* Little dotted grid on top-left like in design (optional) */
+.upload-dropzone::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 8px;
+  width: 40px;
+  height: 40px;
+  background-image: radial-gradient(#a855f7 1px, transparent 1px);
+  background-size: 6px 6px;
+  opacity: 0.6;
+}
+
+/* Inner content */
+.upload-dropzone-inner {
+  height: 100%;
+  padding: 48px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Icon */
+.upload-icon {
+  font-size: 48px !important;
+  color: #4b5563 !important;
+  margin-bottom: 16px;
+}
+
+/* Main text */
+.upload-main-text {
+  font-size: 14px !important;
+  color: #4b5563 !important;
+  margin-bottom: 8px !important;
+}
+
+/* "or" text */
+.upload-or-text {
+  font-size: 12px !important;
+  color: #9ca3af !important;
+  margin-bottom: 12px !important;
+}
+
+/* Browse button */
+.upload-browse-btn {
+  text-transform: none !important;
+  border-radius: 999px !important;
+  padding-inline: 20px !important;
+  font-size: 13px !important;
+}
+
+/* Hidden input */
+.upload-file-input {
+  display: none;
+}
+
+/* Run button */
+.upload-run-btn {
+  width: 100%;
+  text-transform: none !important;
+  border-radius: 4px !important;
+  padding-block: 10px !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  background-color: #4a9fff !important;
+  box-shadow: none !important;
+}
+
+/* Disabled state soft blue/grey */
+.upload-run-btn.Mui-disabled {
+  background-color: #bfdbfe !important;
+  color: #e5e7eb !important;
+}
+
+/* Files count */
+.upload-files-caption {
+  display: block;
+  margin-top: 8px;
+  color: #6b7280 !important;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .upload-container {
+    padding-inline: 16px;
+  }
+
+  .upload-dropzone-inner {
+    padding: 32px 16px;
+  }
+
+  .upload-title {
+    font-size: 24px !important;
+  }
+}

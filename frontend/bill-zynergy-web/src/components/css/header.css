@@ -1,0 +1,69 @@
+/* Top Bar */
+.header-root {
+  background: var(--secondary-color) !important;
+  border-bottom: 1px solid #e5e7eb;
+  color: var(--grey-800);
+}
+
+.header-toolbar {
+  max-width: 1120px;
+  margin-inline: auto;
+  padding-inline: 24px !important;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Logo */
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-icon {
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden; /* important for rounded corners */
+}
+
+.logo-img {
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
+}
+
+.logo-text {
+  font-weight: 700 !important;
+  color:  var(--primary-color);
+  font-size: 30px !important;
+}
+
+/* Navigation Buttons */
+.nav-link {
+  text-transform: none !important;
+  font-size: 14px !important;
+  color: var(--grey-500) !important;
+  font-weight: 500 !important;
+  position: relative !important;
+}
+
+.nav-active {
+  color: var(--primary-color) !important;
+  font-weight: 600 !important;
+}
+
+/* Active underline */
+.nav-active::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--primary-color);
+}

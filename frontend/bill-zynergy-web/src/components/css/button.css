@@ -1,0 +1,21 @@
+.ui-button {
+  text-transform: none !important;
+  border-radius: 999px !important;
+  padding: 12px 32px !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  box-shadow: 0 8px 16px rgba(37, 99, 235, 0.25) !important;
+  transition: all 0.15s ease !important;
+}
+
+/* Hover effect */
+.ui-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.35) !important;
+}
+
+/* Click effect */
+.ui-button:active {
+  transform: translateY(0px);
+  box-shadow: 0 6px 12px rgba(37, 99, 235, 0.25) !important;
+}
