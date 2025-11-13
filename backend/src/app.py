@@ -82,6 +82,50 @@ async def upload_file(file: UploadFile = File(...)):
             status_code=500
         )
 
+@app.get("/upload-contents")
+async def get_upload_contents():
+    """Get list of files and directories in the upload folder"""
+    try:
+        if not UPLOAD_DIR.exists():
+            return JSONResponse(
+                content={"contents": [], "total_size": 0},
+                status_code=200
+            )
+        
+        contents = []
+        total_size = 0
+        
+        for path in UPLOAD_DIR.iterdir():
+            if path.is_file():
+                file_size = path.stat().st_size
+                total_size += file_size
+                contents.append({
+                    "name": path.name,
+                    "type": "file",
+                    "size": file_size,
+                    "path": str(path.resolve())
+                })
+            elif path.is_dir():
+                contents.append({
+                    "name": path.name,
+                    "type": "directory",
+                    "path": str(path.resolve())
+                })
+        
+        return JSONResponse(
+            content={
+                "contents": contents,
+                "total_size": total_size,
+                "count": len(contents)
+            },
+            status_code=200
+        )
+    except Exception as e:
+        return JSONResponse(
+            content={"error": str(e)},
+            status_code=500
+        )
+
 @app.get("/")
 async def root():
     return {"message": "File upload API is running"}
