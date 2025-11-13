@@ -13,6 +13,8 @@ ENV PYTHONUNBUFFERED=1 \
 # Copy requirements file
 COPY requirements.txt .
 
+RUN mkdir output/ upload/
+
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
