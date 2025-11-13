@@ -1,12 +1,12 @@
 # Create uploads directory if it doesn't exist
-from fastapi import FastAPI, File, UploadFile
+from fastapi import APIRouter, File, UploadFile
 from fastapi.responses import JSONResponse
 import os
 from pathlib import Path
 import shutil
 
 
-app = FastAPI()
+router = APIRouter()
 
 UPLOAD_DIR = Path(__file__).resolve().parent.parent / "upload"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
@@ -26,7 +26,7 @@ def _next_destination(extension: str) -> Path:
     return UPLOAD_DIR / f"{base_name}{extension}"
 
 
-@app.post("/upload")
+@router.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
     try:
         if not file.filename:
@@ -67,6 +67,7 @@ async def upload_file(file: UploadFile = File(...)):
             status_code=500
         )
 
-@app.get("/")
-async def root():
+
+@router.get("/health/upload")
+async def upload_healthcheck():
     return {"message": "File upload API is running"}
