@@ -13,6 +13,8 @@ ENV PYTHONUNBUFFERED=1 \
 # Copy requirements file
 COPY requirements.txt .
 
+RUN mkdir output/ upload/
+
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
@@ -23,4 +25,4 @@ COPY src/ ./src/
 EXPOSE 8000
 
 # Run FastAPI application with uvicorn
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "src.app:app", "--host", "0.0.0.0", "--port", "8000"]
