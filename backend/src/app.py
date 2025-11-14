@@ -230,14 +230,19 @@ def show_discrepency_tbl():
     """Extract a zip file"""
     try:
         # Funccall
-        df = pd.read_csv(
+        Discrepancy_df_1 = pd.read_csv(
             "./output/Discrepancy.csv"
-        ).to_html() if os.path.exists(
-            "./output/Discrepancy.csv") else pd.DataFrame().to_html()
+        )
 
         # Your logic here
         return JSONResponse(
-            content={"message": "Success", "df": df},
+            content={
+                "message": "Success",
+                "discrepancy_count": int((Discrepancy_df_1.Has_Discrepancy != "No Discrepancy").sum()),
+                "counts": int(Discrepancy_df_1.shape[0]),
+                "reconcilation_count": int(Discrepancy_df_1.Reconcilation_Amount.sum()),
+                "records": Discrepancy_df_1.to_dict(orient='records')
+            },
             status_code=200
         )
     except Exception as e:
