@@ -16,7 +16,7 @@ import IconButton from "@mui/material/IconButton";
 
 import "./css/dashboard.css";
 
-type Status = "Reconciled" | "Discrepancy" | "Pending";
+type Status = "Reconciled" | "Discrepancy";
 
 interface InvoiceRow {
     Invoice_No?: string;
@@ -63,7 +63,7 @@ const Dashboard: React.FC = () => {
             Billed_Cost: "$3,500.00",
             Ad_Cost: "$2,000.00",
             Reconcilation_Amount: "$3,200.00",
-            status: "Pending",
+            status: "Discrepancy",
             fileUrl: "https://example.com/invoice/INV-2023-003.pdf",
         },
         {
@@ -107,7 +107,7 @@ const Dashboard: React.FC = () => {
             Billed_Cost: "$2,100.00",
             Ad_Cost: "$1,200.00",
             Reconcilation_Amount: "$1,950.00",
-            status: "Pending",
+            status: "Discrepancy",
             fileUrl: "https://example.com/invoice/INV-2023-007.pdf",
         },
         {
@@ -140,7 +140,7 @@ const Dashboard: React.FC = () => {
             Billed_Cost: "$850.00",
             Ad_Cost: "$400.00",
             Reconcilation_Amount: "$800.00",
-            status: "Pending",
+            status: "Discrepancy",
             fileUrl: "https://example.com/invoice/INV-2023-010.pdf",
         },
     ]);
@@ -215,7 +215,7 @@ const Dashboard: React.FC = () => {
                     </Box>
 
                     {/* Pending Review */}
-                    <Box className="summary-item">
+                    {/* <Box className="summary-item">
                         <Card className="summary-card" elevation={0}>
                             <Box className="summary-card-header">
                                 <Typography className="summary-card-title">Pending Review</Typography>
@@ -224,7 +224,7 @@ const Dashboard: React.FC = () => {
                             <Typography className="summary-card-value">{filteredInvoices.filter(i => i.status === "Pending").length}</Typography>
                             <Typography className="summary-card-caption">Awaiting approval</Typography>
                         </Card>
-                    </Box>
+                    </Box> */}
 
                     {/* Reconciled */}
                     <Box className="summary-item">
@@ -261,7 +261,7 @@ const Dashboard: React.FC = () => {
                         >
                             <option value="All">All Status</option>
                             <option value="Reconciled">Reconciled</option>
-                            <option value="Pending">Pending</option>
+                            {/* <option value="Pending">Pending</option> */}
                             <option value="Discrepancy">Discrepancy</option>
                         </select>
                     </Box>
