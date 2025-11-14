@@ -4,7 +4,8 @@ const paths = {
     welcome: '/',
     upload: '/upload',
     dashboard: '/dashboard',
-    reports: '/reports'
+    reports: '/reports',
+    subscription: '/subscription'
 }
 
 export { paths };

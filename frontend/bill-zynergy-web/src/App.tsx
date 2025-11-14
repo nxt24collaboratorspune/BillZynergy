@@ -8,6 +8,7 @@ import { Box } from '@mui/material';
 import Dashboard from './screens/dashboard.screen';
 import Reports from './screens/reports.screen';
 import { paths } from './helper';
+import Subscription from './screens/subscription.screen';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
             <Route path={paths?.upload} element={<Upload />} />
             <Route path={paths?.dashboard} element={<Dashboard />} />
             <Route path={paths?.reports} element={<Reports />} />
+            <Route path={paths?.subscription} element={<Subscription />} />
           </Routes>
         </Box>
         <Footer />

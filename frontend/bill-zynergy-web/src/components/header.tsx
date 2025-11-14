@@ -53,10 +53,10 @@ const Header = () => {
 
           <Button
             startIcon={<DescriptionOutlinedIcon fontSize="small" />}
-            className={`nav-link ${isActive(paths?.reports) ? "nav-active" : ""}`}
-            onClick={() => navigate(paths?.reports)}
+            className={`nav-link ${isActive(paths?.subscription) ? "nav-active" : ""}`}
+            onClick={() => navigate(paths?.subscription)}
           >
-            Reports
+            Subscription Plans
           </Button>
         </Stack>
       </Toolbar>

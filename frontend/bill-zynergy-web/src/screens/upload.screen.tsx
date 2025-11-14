@@ -23,9 +23,9 @@ import { paths } from "../helper";
 
 // 4 pipeline calls AFTER upload (adapt URLs as needed)
 const pipelineUrls = [
-  "/extract-file",
-  "/matching",
-  "/descripency",
+  "https://app-billzynergy-backend-dev.azurewebsites.net/extract-file",
+  "https://app-billzynergy-backend-dev.azurewebsites.net/matching",
+  "https://app-billzynergy-backend-dev.azurewebsites.net/descripency",
   "/api/complete",
 ];
 

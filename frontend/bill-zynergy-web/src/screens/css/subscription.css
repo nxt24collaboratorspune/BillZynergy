@@ -1,0 +1,81 @@
+/* Pricing Cards Layout */
+.pricing-card {
+  width: 45%;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: #f4f6f9;
+}
+
+.pricing-card.premium {
+  background-color: #e1f5fe;
+}
+
+.pricing-header {
+  text-align: center;
+}
+
+.pricing-header .MuiTypography-h5 {
+  font-weight: 700;
+}
+
+.pricing-feature-list {
+  margin-top: 20px;
+}
+
+.pricing-feature-list > div {
+  margin-bottom: 10px;
+}
+
+.MuiTypography-body2 {
+  font-size: 14px;
+  display: inline-block;
+  margin-left: 8px;
+}
+
+.MuiButton-contained {
+  text-transform: none;
+  font-size: 16px;
+  padding: 12px;
+  font-weight: bold;
+}
+
+.MuiCheckbox-root {
+  padding: 0;
+}
+
+.MuiCheckbox-colorPrimary.Mui-checked {
+  color: #5c6bc0;
+}
+
+.pricing-card .MuiTypography-h4 {
+  font-size: 2rem;
+  color: #5c6bc0;
+}
+
+.pricing-card .MuiButton-contained {
+  background-color: #5c6bc0;
+  color: #fff;
+  margin-top: 24px;
+}
+
+.pricing-card .MuiButton-contained:hover {
+  background-color: #3f51b5;
+}
+
+.pricing-card .MuiCard-root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .pricing-card {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .pricing-card .MuiTypography-h4 {
+    font-size: 1.5rem;
+  }
+}

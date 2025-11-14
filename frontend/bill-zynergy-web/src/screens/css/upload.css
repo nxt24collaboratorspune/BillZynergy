@@ -1,7 +1,7 @@
 /* Root container for the Upload page */
 .upload-root {
   flex: 1;
-  background-color: #f4f5f7;
+  background-color: var(--grey-100);
   display: flex;
   justify-content: center;
   padding-block: 32px;
@@ -26,17 +26,14 @@
   font-weight: 700 !important;
   font-size: 28px !important;
   margin-bottom: 24px !important;
-  color: #4a90e2;
-  /* Primary color */
+  color: var(--primary-color);
 }
 
 /* Dropzone for file upload */
 .upload-dropzone {
   border-radius: 0 !important;
-  border: 2px solid #A9C9F5 !important;
-  /* Light blue border */
-  background-color: #f0f7ff !important;
-  /* Light blue background */
+  border: 2px solid var(--primary-color-light) !important;
+  background-color: var(--grey-100) !important;
   min-height: 260px;
   margin-bottom: 24px;
   box-shadow: none !important;
@@ -57,22 +54,21 @@
 /* Icon style */
 .upload-icon {
   font-size: 48px !important;
-  color: #b0c0d1 !important;
-  /* Grey color for icon */
+  color: var(--grey-500) !important;
   margin-bottom: 16px;
 }
 
 /* Main text in the dropzone */
 .upload-main-text {
   font-size: 18px !important;
-  color: #717171 !important;
+  color: var(--grey-600) !important;
   margin-bottom: 8px !important;
 }
 
 /* "or" separator text */
 .upload-or-text {
   font-size: 16px !important;
-  color: #717171 !important;
+  color: var(--grey-600) !important;
   margin-bottom: 12px !important;
 }
 
@@ -82,9 +78,8 @@
   border-radius: 999px !important;
   padding-inline: 20px !important;
   font-size: 16px !important;
-  background-color: #4a9fff !important;
-  /* Primary color */
-  color: white !important;
+  background-color: var(--primary-color) !important;
+  color: var(--secondary-color) !important;
 }
 
 /* Hidden input field */
@@ -100,21 +95,21 @@
   padding-block: 10px !important;
   font-weight: 600 !important;
   font-size: 14px !important;
-  background-color: #4a9fff !important;
+  background-color: var(--primary-color) !important;
   box-shadow: none !important;
 }
 
 /* Disabled state for run button */
 .upload-run-btn.Mui-disabled {
   background-color: #bfdbfe !important;
-  color: #e5e7eb !important;
+  color:  var(--grey-600) !important;
 }
 
 /* Files count text */
 .upload-files-caption {
   display: block;
   margin-top: 8px;
-  color: #6b7280 !important;
+  color:  var(--grey-600) !important;
 }
 
 /* Responsive styles */
@@ -143,7 +138,7 @@
 
 .upload-preview-label {
   font-size: 13px;
-  color: #6b7280;
+  color:  var(--grey-600);
 }
 
 .upload-preview-image {
@@ -157,13 +152,13 @@
   width: 100%;
   height: 260px;
   border-radius: 12px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--grey-200);
 }
 
 .upload-preview-generic {
   padding: 24px;
   border-radius: 12px;
-  border: 1px dashed #d1d5db;
+  border: 1px dashed var(--grey-200);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -186,9 +181,8 @@
   text-transform: none !important;
   border-radius: 999px !important;
   padding-inline: 28px !important;
-  background-color: #4a9fff !important;
-  /* Primary color */
-  color: white !important;
+  background-color: var(--primary-color) !important;
+  color: var(--secondary-color) !important;
 }
 
 /* Container for the stepper layout */
@@ -196,7 +190,7 @@
   position: relative;
   margin-top: 24px;
   padding: 24px 60px 18px;
-  background: #ffffff;
+  background: var(--secondary-color);
   border-radius: 999px;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
   display: flex;
@@ -209,13 +203,10 @@
 .upload-stepper-track {
   position: absolute;
   top: 36px;
-  /* Aligns the track vertically with the circles */
   left: 135px;
-  /* Space from the left edge */
   right: 125px;
-  /* Space from the right edge */
   height: 4px;
-  background: #e5e7eb;
+  background: var(--grey-200);
   border-radius: 999px;
   overflow: hidden;
   display: flex;
@@ -224,8 +215,7 @@
 /* Blue progress fill */
 .upload-stepper-track-fill {
   height: 100%;
-  background: #4a9fff;
-  /* Primary color for the active progress */
+  background: var(--primary-color);
   border-radius: inherit;
 }
 
@@ -249,16 +239,16 @@
   width: 34px;
   height: 34px;
   border-radius: 999px;
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--grey-200);
   /* Border color */
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-size: 13px;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--grey-600);
   /* Grey color for inactive steps */
-  background: #f9fafb;
+  background: var(--grey-100);
   /* Background for inactive steps */
   z-index: 1;
   transition: background 0.3s ease, color 0.3s ease;
@@ -268,9 +258,9 @@
 /* Active and completed step circle styles */
 .upload-step-circle.active,
 .upload-step-circle.completed {
-  background: #4a9fff;
-  border-color: #4a9fff;
-  color: #ffffff;
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: var(--secondary-color);
 }
 
 /* Labels row (aligned below the circles) */
@@ -284,25 +274,25 @@
 /* Label text */
 .upload-step-title {
   font-size: 15px;
-  color: #4b5563;
+  color: var(--grey-600);
   text-align: center;
 }
 
 .upload-step-title.active {
   font-weight: 700;
-  color: #111827;
+  color: var(--grey-900);
 }
 
 /* Insight download icon */
 .insight-download-icon {
   margin-top: 4px;
   border: 1px solid #bfdbfe;
-  background: #eff6ff;
+  background: var(--grey-100);
   border-radius: 999px !important;
 }
 
 .insight-download-icon svg {
-  color: #4a9fff;
+  color: var(--primary-color);
 }
 
 /* Mobile responsiveness */
