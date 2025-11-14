@@ -13,7 +13,7 @@ import pandas as pd
 from src.agent01_parser.data_parser import parser_agent
 from src.agent02.agent02 import agent02
 from src.agent03.agent03 import agent03
-
+from src.agent04.agent04 import agent04
 
 # Load ENV FIles
 load_dotenv()
@@ -204,7 +204,20 @@ def descripency():
 
 @app.get("/explanation-report")
 def explanation_report():
-    pass
+    try:
+        # Funccall
+        df = agent04()
+
+        # Your logic here
+        return JSONResponse(
+            content={"message": "Success", "df": df},
+            status_code=200
+        )
+    except Exception as e:
+        return JSONResponse(
+            content={"error": str(e) + str(glob("./output/*")[0])},
+            status_code=500
+        )
 
 
 @app.get("/audit_trail_agent")
@@ -220,8 +233,7 @@ def show_discrepency_tbl():
         df = pd.read_csv(
             "./output/Discrepancy.csv"
         ).to_html() if os.path.exists(
-            "./output/Discrepancy.csv"
-        ) else pd.DataFrame().to_html()
+            "./output/Discrepancy.csv") else pd.DataFrame().to_html()
 
         # Your logic here
         return JSONResponse(
