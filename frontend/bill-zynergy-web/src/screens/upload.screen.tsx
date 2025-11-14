@@ -4,6 +4,7 @@ import React, {
   ChangeEvent,
   DragEvent,
   FC,
+  useEffect,
 } from "react";
 import {
   Box,
@@ -14,80 +15,240 @@ import {
   Link,
 } from "@mui/material";
 import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
+import CheckIcon from "@mui/icons-material/Check";
+import * as XLSX from "xlsx";
+
 import "./css/upload.css";
 import { paths } from "../helper";
 
+// 4 pipeline calls AFTER upload (adapt URLs as needed)
+const pipelineUrls = [
+  "/extract-file",
+  "/matching",
+  "/descripency",
+  "/api/complete",
+];
+
+// 4 visual steps
+const steps = [
+  {
+    id: 1,
+    title: "Injection",
+    // subtitle: "Select and upload your invoices.",
+  },
+  {
+    id: 2,
+    title: "Matching",
+    // subtitle: "AI processes and extracts data.",
+  },
+  {
+    id: 3,
+    title: "Discrepancy",
+    // subtitle: "Verify and reconcile invoices.",
+  },
+  {
+    id: 4,
+    title: "Insight",
+    // subtitle: "Invoice processing is finalized.",
+  },
+  {
+    id: 5,
+    title: "Audit Trail",
+    // subtitle: "Invoice processing is finalized.",
+  },
+];
+
 const Upload: FC = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
 
+  // previews
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null); // image/pdf
+  const [textPreview, setTextPreview] = useState<string | null>(null); // txt
+  const [csvPreview, setCsvPreview] = useState<string[][] | null>(null); // csv
+  const [xlsxPreview, setXlsxPreview] = useState<string[][] | null>(null); // xlsx
+
+  // 0..3  (0 => first step active)
+  const [visualStepIndex, setVisualStepIndex] = useState(0);
+
   const handleBrowseClick = () => {
-    fileInputRef?.current?.click();
+    fileInputRef.current?.click();
   };
 
-  // When user selects files from browse
-  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
-    const fileList = event?.target?.files;
+  // line progress between steps (3 gaps → 0%, 33%, 66%, 100%)
+  const progressPercent = React.useMemo(() => {
+    const maxIndex = steps.length - 1; // 3
+    return (visualStepIndex / maxIndex) * 100;
+  }, [visualStepIndex]);
 
+  // --------------------------
+  // Preview handling
+  // --------------------------
+  useEffect(() => {
+    let url: string | null = null;
+
+    if (files.length === 0) {
+      setPreviewUrl(null);
+      setTextPreview(null);
+      setCsvPreview(null);
+      setXlsxPreview(null);
+      return;
+    }
+
+    const file = files[0];
+    const fileName = file.name.toLowerCase();
+    const mime = file.type;
+
+    // reset all previews
+    setPreviewUrl(null);
+    setTextPreview(null);
+    setCsvPreview(null);
+    setXlsxPreview(null);
+
+    if (mime.startsWith("image/") || mime === "application/pdf") {
+      // IMAGE / PDF
+      url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    } else if (mime === "text/plain" || fileName.endsWith(".txt")) {
+      // TXT
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setTextPreview((e.target?.result as string) ?? "");
+      };
+      reader.readAsText(file);
+    } else if (mime === "text/csv" || fileName.endsWith(".csv")) {
+      // CSV
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = (e.target?.result as string) ?? "";
+        const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
+        const rows = lines.slice(0, 20).map((line) => line.split(","));
+        setCsvPreview(rows);
+      };
+      reader.readAsText(file);
+    } else if (
+      mime ===
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+      fileName.endsWith(".xlsx")
+    ) {
+      // XLSX
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = new Uint8Array(e.target?.result as ArrayBuffer);
+        const workbook = XLSX.read(data, { type: "array" });
+        const firstSheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[firstSheetName];
+        const rows: any[][] = XLSX.utils.sheet_to_json(sheet, {
+          header: 1,
+        }) as any[][];
+        const limited = rows.slice(0, 20).map((r) => r.map((v) => String(v ?? "")));
+        setXlsxPreview(limited);
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    return () => {
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, [files]);
+
+  // --------------------------
+  // File events
+  // --------------------------
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const fileList = event.target.files;
     const selected: File[] = fileList ? Array.from(fileList) : [];
     setFiles(selected);
-
-    if (selected?.length > 0) {
-      await uploadFiles(selected);
-    }
+    setVisualStepIndex(0); // reset to first step
   };
 
-  const handleDrop = async (event: DragEvent<HTMLDivElement>) => {
+  const handleDrop = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     const fileList = event.dataTransfer.files;
-    const dropped: File[] = fileList ? Array.from(fileList) : [];
+    const dropped: File[] = Array.from(fileList);
     setFiles(dropped);
-
-    if (dropped.length > 0) {
-      await uploadFiles(dropped);
-    }
+    setVisualStepIndex(0);
   };
 
   const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
   };
 
-  const uploadFiles = async (fileArray: File[]) => {
+  // --------------------------
+  // Upload + sequential APIs
+  // --------------------------
+  const uploadAndRunPipeline = async (fileArray: File[]) => {
     try {
+      if (fileArray.length === 0) return;
+
       setLoading(true);
-        if (fileArray.length === 0) return;
+      setVisualStepIndex(0); // Step 1 active (Extract Files)
 
-      const formData = new FormData();
-       formData.append("file", fileArray[0]);
-      // fileArray.forEach((file) => formData.append("files", file));
+      // 1) Upload API (does NOT complete Step 1; only prepares the file)
+      const uploadFormData = new FormData();
+      uploadFormData.append("file", fileArray[0]);
 
-      const response = await fetch("https://app-billzynergy-backend-dev.azurewebsites.net/upload", {
-        method: "POST",
-        body: formData,
-        // headers: {
-        //   Accept: "application/json",
-        // },
-      });
+      const uploadRes = await fetch(
+        "https://app-billzynergy-backend-dev.azurewebsites.net/upload",
+        {
+          method: "POST",
+          body: uploadFormData,
+        }
+      );
 
-      if (!response.ok) {
-        throw new Error(`Upload failed: ${response.statusText}`);
+      if (uploadRes.status !== 200) {
+        throw new Error(
+          `Upload failed: ${uploadRes.status} ${uploadRes.statusText}`
+        );
       }
 
-      const data = await response.json();
-      console.log("Upload success:", data);
-      alert("Files uploaded successfully!");
+      // NOTE: visualStepIndex stays 0 here → Step 1 active, not completed yet.
+      // Step 1 will be completed only when /extract-file (first pipeline call) succeeds.
+
+      // 2) Run 4 sequential pipeline APIs
+      for (let i = 0; i < pipelineUrls.length; i++) {
+        const url = pipelineUrls[i];
+        const res = await fetch(url, { method: "GET" });
+
+        if (res.status !== 200) {
+          throw new Error(
+            `Step failed: ${url} – ${res.status} ${res.statusText}`
+          );
+        }
+
+        // Each successful pipeline call advances ONE step:
+        // i = 0 (/extract-file)   -> visualStepIndex = 1 (Step 1 completed, Step 2 active)
+        // i = 1 (/api/review)     -> visualStepIndex = 2 (Step 2 completed, Step 3 active)
+        // i = 2 (/api/reconcile)  -> visualStepIndex = 3 (Step 3 completed, Step 4 active)
+        // i = 3 (/api/complete)   -> still visualStepIndex = 3 (Step 4 active/final)
+        const completedCount = i + 1;
+        const newIndex = Math.min(completedCount, steps.length - 1);
+        setVisualStepIndex(newIndex);
+      }
+
+      alert("All steps completed successfully!");
     } catch (error) {
-      console.error("Upload error:", error);
-      alert("File upload failed!");
+      console.error("Pipeline error:", error);
+      alert("Something went wrong during reconciliation.");
+      // visualStepIndex stays at last successful step
     } finally {
       setLoading(false);
     }
   };
 
+  const handleProceedClick = async () => {
+    if (files.length === 0 || loading) return;
+    await uploadAndRunPipeline(files);
+  };
+
+  const firstFile = files[0];
+
   return (
     <Box className="upload-root">
       <Box className="upload-container">
+        {/* Breadcrumb */}
         <Breadcrumbs
           aria-label="breadcrumb"
           className="upload-breadcrumbs"
@@ -99,10 +260,12 @@ const Upload: FC = () => {
           <Typography color="text.primary">Upload</Typography>
         </Breadcrumbs>
 
+        {/* Title */}
         <Typography variant="h4" className="upload-title">
-          Upload Invoice
+          Upload Invoice Files
         </Typography>
 
+        {/* Dropzone */}
         <Card
           elevation={0}
           className="upload-dropzone"
@@ -110,26 +273,115 @@ const Upload: FC = () => {
           onDragOver={handleDragOver}
         >
           <Box className="upload-dropzone-inner">
-            <CloudUploadOutlinedIcon className="upload-icon" />
-            <Typography variant="body1" className="upload-main-text">
-              Drag and drop your invoice files here
-            </Typography>
-            <Typography variant="body2" className="upload-or-text">
-              or
-            </Typography>
-            <Button
-              variant="contained"
-              size="small"
-              className="upload-browse-btn"
-              onClick={handleBrowseClick}
-              disabled={loading}
-            >
-              {loading ? "Uploading..." : "Browse"}
-            </Button>
+            {!firstFile && (
+              <>
+                <CloudUploadOutlinedIcon className="upload-icon" />
+                <Typography variant="body1" className="upload-main-text">
+                  Drag and drop your invoice files here
+                </Typography>
+                <Typography variant="body2" className="upload-or-text">
+                  or
+                </Typography>
+                <Button
+                  variant="contained"
+                  size="small"
+                  className="upload-browse-btn"
+                  onClick={handleBrowseClick}
+                  disabled={loading}
+                >
+                  Browse Files
+                </Button>
+              </>
+            )}
 
+            {firstFile && (
+              <Box className="upload-preview-wrapper">
+                <Typography className="upload-preview-label">
+                  Selected File: {firstFile.name}
+                </Typography>
+
+                {previewUrl && firstFile.type.startsWith("image/") && (
+                  <img
+                    src={previewUrl}
+                    alt="preview"
+                    className="upload-preview-image"
+                  />
+                )}
+
+                {previewUrl && firstFile.type === "application/pdf" && (
+                  <iframe
+                    title="pdf-preview"
+                    src={previewUrl}
+                    className="upload-preview-frame"
+                  />
+                )}
+
+                {textPreview && (
+                  <Box className="upload-preview-text">
+                    <pre>{textPreview}</pre>
+                  </Box>
+                )}
+
+                {csvPreview && (
+                  <Box className="upload-preview-table">
+                    <table>
+                      <tbody>
+                        {csvPreview.map((row, rowIndex) => (
+                          <tr key={rowIndex}>
+                            {row.map((cell, cellIndex) => (
+                              <td key={cellIndex}>{cell}</td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </Box>
+                )}
+
+                {xlsxPreview && (
+                  <Box className="upload-preview-table">
+                    <table>
+                      <tbody>
+                        {xlsxPreview.map((row, rowIndex) => (
+                          <tr key={rowIndex}>
+                            {row.map((cell, cellIndex) => (
+                              <td key={cellIndex}>{cell}</td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </Box>
+                )}
+
+                {!previewUrl &&
+                  !textPreview &&
+                  !csvPreview &&
+                  !xlsxPreview && (
+                    <Box className="upload-preview-generic">
+                      <CloudUploadOutlinedIcon className="upload-icon" />
+                      <Typography variant="body2" color="text.secondary">
+                        Preview not available for this file type.
+                      </Typography>
+                    </Box>
+                  )}
+
+                <Button
+                  variant="text"
+                  size="small"
+                  onClick={handleBrowseClick}
+                  className="upload-change-btn"
+                  disabled={loading}
+                >
+                  Change file
+                </Button>
+              </Box>
+            )}
+
+            {/* Hidden file input */}
             <input
               type="file"
-              multiple
+              multiple={false}
               ref={fileInputRef}
               onChange={handleFileChange}
               className="upload-file-input"
@@ -137,11 +389,70 @@ const Upload: FC = () => {
           </Box>
         </Card>
 
-        {files.length > 0 && (
-          <Typography variant="caption" className="upload-files-caption">
-            {files.length} file(s) selected
-          </Typography>
-        )}
+        {/* Proceed button */}
+        <Box className="upload-proceed-wrapper">
+          <Button
+            variant="contained"
+            size="large"
+            className="upload-proceed-btn"
+            onClick={handleProceedClick}
+            disabled={files.length === 0 || loading}
+          >
+            {loading ? "Running AI Reconciliation..." : "Run AI Reconciliation"}
+          </Button>
+        </Box>
+
+        {/* Stepper */}
+        <Box className="upload-stepper">
+          {/* track behind circles */}
+          <Box className="upload-stepper-track">
+            <Box
+              className="upload-stepper-track-fill"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </Box>
+
+          {/* circles row */}
+          <Box className="upload-stepper-circles-row">
+            {steps.map((step, index) => {
+              const isCompleted = index < visualStepIndex;
+              const isActive = index === visualStepIndex;
+
+              return (
+                <Box key={step.id} className="upload-step-circle-wrapper">
+                  <Box
+                    className={[
+                      "upload-step-circle",
+                      isActive ? "active" : "",
+                      isCompleted ? "completed" : "",
+                    ].join(" ")}
+                  >
+                    {isCompleted ? <CheckIcon fontSize="small" /> : step.id}
+                  </Box>
+                </Box>
+              );
+            })}
+          </Box>
+
+          {/* labels row */}
+          <Box className="upload-stepper-label-row">
+            {steps.map((step, index) => {
+              const isActive = index === visualStepIndex;
+              return (
+                <Box key={step.id} className="upload-step-label-wrapper">
+                  <Typography
+                    className={
+                      "upload-step-title" + (isActive ? " active" : "")
+                    }
+                  >
+                    {step.title}
+                  </Typography>
+                </Box>
+              );
+            })}
+          </Box>
+        </Box>
+
       </Box>
     </Box>
   );
