@@ -5,6 +5,7 @@ import {
     Typography,
     Button,
     Chip,
+    CircularProgress,
 } from "@mui/material";
 import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 import CheckIcon from "@mui/icons-material/Check";
@@ -16,9 +17,16 @@ import IconButton from "@mui/material/IconButton";
 
 import "./css/dashboard.css";
 
-type Status = "Reconciled" | "Discrepancy";
+type HasDiscrepancy = "No Discrepancy" | "Discrepancy";
 
 interface InvoiceRow {
+    counts?: number;
+    discrepancy_count?: number
+    reconcilation_count?: number
+    records?: Records[]
+}
+
+interface Records {
     Invoice_No?: string;
     Client_Name?: string;
     Vendor?: string;
@@ -26,134 +34,45 @@ interface InvoiceRow {
     Billed_Cost?: string;
     Ad_Cost?: string;
     Media_budget?: string;
-    Reconcilation_Amount?: string
-    status?: Status;
+    Reconcilation_Amount?: string;
+    Has_Discrepancy?: HasDiscrepancy;
     fileUrl?: string;
 }
 
 const Dashboard: React.FC = () => {
-    const [invoiceData, setInvoiceData] = useState<InvoiceRow[]>([
-        {
-            Invoice_No: "INV-2023-001",
-            Client_Name: "Tech Solutions Inc.",
-            Vendor: "Tech Vendor A",
-            Campaign_Id: "CP-12345",
-            Billed_Cost: "$1,250.00",
-            Ad_Cost: "$800.00",
-            Reconcilation_Amount: "$1,000.00",
-            status: "Reconciled",
-            fileUrl: "https://example.com/invoice/INV-2023-001.pdf",
-        },
-        {
-            Invoice_No: "INV-2023-002",
-            Client_Name: "Global Supply Co.",
-            Vendor: "Global Vendor B",
-            Campaign_Id: "CP-12346",
-            Billed_Cost: "$780.50",
-            Ad_Cost: "$400.00",
-            Reconcilation_Amount: "$650.50",
-            status: "Discrepancy",
-            fileUrl: "https://example.com/invoice/INV-2023-002.pdf",
-        },
-        {
-            Invoice_No: "INV-2023-003",
-            Client_Name: "Creative Marketing Ltd.",
-            Vendor: "Creative Vendor C",
-            Campaign_Id: "CP-12347",
-            Billed_Cost: "$3,500.00",
-            Ad_Cost: "$2,000.00",
-            Reconcilation_Amount: "$3,200.00",
-            status: "Discrepancy",
-            fileUrl: "https://example.com/invoice/INV-2023-003.pdf",
-        },
-        {
-            Invoice_No: "INV-2023-004",
-            Client_Name: "Data Insights Corp.",
-            Vendor: "Data Vendor D",
-            Campaign_Id: "CP-12348",
-            Billed_Cost: "$99.99",
-            Ad_Cost: "$50.00",
-            Reconcilation_Amount: "$99.99",
-            status: "Reconciled",
-            fileUrl: "https://example.com/invoice/INV-2023-004.pdf",
-        },
-        {
-            Invoice_No: "INV-2023-005",
-            Client_Name: "Office Supplies Inc.",
-            Vendor: "Office Vendor E",
-            Campaign_Id: "CP-12349",
-            Billed_Cost: "$45.75",
-            Ad_Cost: "$20.00",
-            Reconcilation_Amount: "$45.75",
-            status: "Discrepancy",
-            fileUrl: "https://example.com/invoice/INV-2023-005.pdf",
-        },
-        {
-            Invoice_No: "INV-2023-006",
-            Client_Name: "Transport Logistics LLC",
-            Vendor: "Transport Vendor F",
-            Campaign_Id: "CP-12350",
-            Billed_Cost: "$560.00",
-            Ad_Cost: "$300.00",
-            Reconcilation_Amount: "$500.00",
-            status: "Reconciled",
-            fileUrl: "https://example.com/invoice/INV-2023-006.pdf",
-        },
-        {
-            Invoice_No: "INV-2023-007",
-            Client_Name: "IT Hardware Solutions",
-            Vendor: "IT Vendor G",
-            Campaign_Id: "CP-12351",
-            Billed_Cost: "$2,100.00",
-            Ad_Cost: "$1,200.00",
-            Reconcilation_Amount: "$1,950.00",
-            status: "Discrepancy",
-            fileUrl: "https://example.com/invoice/INV-2023-007.pdf",
-        },
-        {
-            Invoice_No: "INV-2023-008",
-            Client_Name: "Marketing Pro Ltd.",
-            Vendor: "Marketing Vendor H",
-            Campaign_Id: "CP-12352",
-            Billed_Cost: "$980.00",
-            Ad_Cost: "$500.00",
-            Reconcilation_Amount: "$900.00",
-            status: "Reconciled",
-            fileUrl: "https://example.com/invoice/INV-2023-008.pdf",
-        },
-        {
-            Invoice_No: "INV-2023-009",
-            Client_Name: "Tech Enterprises",
-            Vendor: "Tech Vendor I",
-            Campaign_Id: "CP-12353",
-            Billed_Cost: "$2,600.00",
-            Ad_Cost: "$1,400.00",
-            Reconcilation_Amount: "$2,500.00",
-            status: "Discrepancy",
-            fileUrl: "https://example.com/invoice/INV-2023-009.pdf",
-        },
-        {
-            Invoice_No: "INV-2023-010",
-            Client_Name: "Office Supplies Co.",
-            Vendor: "Office Vendor J",
-            Campaign_Id: "CP-12354",
-            Billed_Cost: "$850.00",
-            Ad_Cost: "$400.00",
-            Reconcilation_Amount: "$800.00",
-            status: "Discrepancy",
-            fileUrl: "https://example.com/invoice/INV-2023-010.pdf",
-        },
-    ]);
-
+    const [invoiceData, setInvoiceData] = useState<InvoiceRow>({});
     const [statusFilter, setStatusFilter] = useState("All");
     const [vendorFilter, setVendorFilter] = useState("All");
     const [searchText, setSearchText] = useState("");
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);  // Set loading state to true initially
 
-    // Filter invoice data based on search text, status, and vendor
-    const filteredInvoices = invoiceData.filter((row) => {
+    // Fetch invoices from API when the component mounts
+    useEffect(() => {
+        const fetchInvoiceData = async () => {
+            setLoading(true);
+            try {
+                // Replace this with your actual API endpoint
+                const response = await fetch("https://app-billzynergy-backend-dev.azurewebsites.net/show_discrepency_tbl");
+                if (response.ok) {
+                    const data = await response.json();
+                    setInvoiceData(data);  // Set the fetched invoice data
+                } else {
+                    console.error("Failed to fetch invoice data");
+                }
+            } catch (error) {
+                console.error("Error fetching invoice data:", error);
+            } finally {
+                setLoading(false);  // Set loading to false once data is fetched
+            }
+        };
+
+        fetchInvoiceData();
+    }, []);
+
+    const filteredInvoices = invoiceData?.records?.filter((row) => {
+        const status = row?.Has_Discrepancy === "No Discrepancy" ? "Reconciled" : "Discrepancy"
         // Status Filter
-        if (statusFilter !== "All" && row.status !== statusFilter) return false;
+        if (statusFilter !== "All" && status !== statusFilter) return false;
 
         // Vendor Filter
         if (vendorFilter !== "All" && row.Vendor !== vendorFilter) return false;
@@ -162,7 +81,7 @@ const Dashboard: React.FC = () => {
         const text = searchText.toLowerCase();
         if (
             text &&
-            !row?.Invoice_No?.toLowerCase().includes(text) &&
+            !row?.Invoice_No?.toString().includes(text) &&
             !row?.Vendor?.toLowerCase().includes(text)
         ) {
             return false;
@@ -171,8 +90,7 @@ const Dashboard: React.FC = () => {
         return true;
     });
 
-    // Function to handle invoice preview
-    const handleOpenInvoice = (row: InvoiceRow) => {
+    const handleOpenInvoice = (row: Records) => {
         if (!row.fileUrl) {
             alert("No file available for this invoice yet.");
             return;
@@ -197,7 +115,7 @@ const Dashboard: React.FC = () => {
                                 <Typography className="summary-card-title">Total Invoices</Typography>
                                 <ReceiptLongOutlinedIcon className="summary-card-icon" />
                             </Box>
-                            <Typography className="summary-card-value">{invoiceData.length}</Typography>
+                            <Typography className="summary-card-value">{invoiceData?.counts}</Typography>
                             <Typography className="summary-card-caption">Processed this period</Typography>
                         </Card>
                     </Box>
@@ -209,22 +127,10 @@ const Dashboard: React.FC = () => {
                                 <Typography className="summary-card-title">Discrepancies</Typography>
                                 <ReportGmailerrorredOutlinedIcon className="summary-card-icon warning" />
                             </Box>
-                            <Typography className="summary-card-value">{filteredInvoices.filter(i => i.status === "Discrepancy").length}</Typography>
+                            <Typography className="summary-card-value">{filteredInvoices?.filter(i => i.Has_Discrepancy === "Discrepancy").length}</Typography>
                             <Typography className="summary-card-caption">Requiring attention</Typography>
                         </Card>
                     </Box>
-
-                    {/* Pending Review */}
-                    {/* <Box className="summary-item">
-                        <Card className="summary-card" elevation={0}>
-                            <Box className="summary-card-header">
-                                <Typography className="summary-card-title">Pending Review</Typography>
-                                <AccessTimeOutlinedIcon className="summary-card-icon" />
-                            </Box>
-                            <Typography className="summary-card-value">{filteredInvoices.filter(i => i.status === "Pending").length}</Typography>
-                            <Typography className="summary-card-caption">Awaiting approval</Typography>
-                        </Card>
-                    </Box> */}
 
                     {/* Reconciled */}
                     <Box className="summary-item">
@@ -233,7 +139,7 @@ const Dashboard: React.FC = () => {
                                 <Typography className="summary-card-title">Reconciled</Typography>
                                 <CheckIcon className="summary-card-icon success" />
                             </Box>
-                            <Typography className="summary-card-value">{filteredInvoices.filter(i => i.status === "Reconciled").length}</Typography>
+                            <Typography className="summary-card-value">{filteredInvoices?.filter(i => i.Has_Discrepancy === "No Discrepancy").length}</Typography>
                             <Typography className="summary-card-caption">Successfully matched</Typography>
                         </Card>
                     </Box>
@@ -261,7 +167,6 @@ const Dashboard: React.FC = () => {
                         >
                             <option value="All">All Status</option>
                             <option value="Reconciled">Reconciled</option>
-                            {/* <option value="Pending">Pending</option> */}
                             <option value="Discrepancy">Discrepancy</option>
                         </select>
                     </Box>
@@ -274,10 +179,11 @@ const Dashboard: React.FC = () => {
                             onChange={(e) => setVendorFilter(e.target.value)}
                         >
                             <option value="All">All Vendors</option>
-                            {/* Add Vendor options dynamically */}
-                            {invoiceData.map((i) => (
-                                <option key={i.Vendor} value={i.Vendor}>
-                                    {i.Vendor}
+                            {Array.from(
+                                new Set(filteredInvoices?.map((i) => i.Vendor))
+                            ).map((vendor) => (
+                                <option key={vendor} value={vendor}>
+                                    {vendor}
                                 </option>
                             ))}
                         </select>
@@ -304,25 +210,33 @@ const Dashboard: React.FC = () => {
                     </Box>
 
                     {/* Table rows */}
-                    {filteredInvoices.map((row) => (
-                        <Box key={row.Invoice_No} className="details-table-row">
-                            <Typography className="details-cell">{row.Invoice_No}</Typography>
-                            <Typography className="details-cell">{row.Client_Name}</Typography>
-                            <Typography className="details-cell">{row.Vendor}</Typography>
-                            <Typography className="details-cell">{row.Campaign_Id}</Typography>
-                            <Typography className="details-cell right">{row.Billed_Cost}</Typography>
-                            <Typography className="details-cell right">{row.Ad_Cost}</Typography>
-                            <Typography className="details-cell right">{row.Reconcilation_Amount}</Typography>
-                            <Box className="details-cell right">
-                                <Chip size="small" label={row.status} className={`status-chip status-${row?.status?.toLowerCase()}`} />
-                            </Box>
-                            <Box className="details-cell right">
-                                <IconButton onClick={() => handleOpenInvoice(row)} className="preview-icon-btn" size="small">
-                                    <VisibilityOutlinedIcon />
-                                </IconButton>
-                            </Box>
+                    {loading ? (
+                        <Box display="flex" justifyContent="center" alignItems="center" p={2}>
+                            <CircularProgress />
                         </Box>
-                    ))}
+                    ) : (
+                        filteredInvoices?.map((row) => {
+                            const status = row?.Has_Discrepancy === "No Discrepancy" ? "Reconciled" : "Discrepancy"
+
+                            return (<Box key={row.Invoice_No} className="details-table-row">
+                                <Typography className="details-cell">{row.Invoice_No}</Typography>
+                                <Typography className="details-cell">{row.Client_Name}</Typography>
+                                <Typography className="details-cell">{row.Vendor}</Typography>
+                                <Typography className="details-cell">{row.Campaign_Id}</Typography>
+                                <Typography className="details-cell right">{row.Billed_Cost}</Typography>
+                                <Typography className="details-cell right">{row.Ad_Cost}</Typography>
+                                <Typography className="details-cell right">{row.Reconcilation_Amount}</Typography>
+                                <Box className="details-cell right">
+                                    <Chip size="small" label={status} className={`status-chip status-${status?.toLowerCase()}`} />
+                                </Box>
+                                <Box className="details-cell right">
+                                    <IconButton onClick={() => handleOpenInvoice(row)} className="preview-icon-btn" size="small">
+                                        <VisibilityOutlinedIcon />
+                                    </IconButton>
+                                </Box>
+                            </Box>)
+                        })
+                    )}
                 </Card>
             </Box>
         </Box>
