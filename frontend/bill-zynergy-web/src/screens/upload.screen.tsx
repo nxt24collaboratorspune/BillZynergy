@@ -27,7 +27,7 @@ const pipelineUrls = [
   "https://app-billzynergy-backend-dev.azurewebsites.net/extract-file",
   "https://app-billzynergy-backend-dev.azurewebsites.net/matching",
   "https://app-billzynergy-backend-dev.azurewebsites.net/descripency",
-  "https://app-billzynergy-backend-dev.azurewebsites.net/explanation-report",
+  // "https://app-billzynergy-backend-dev.azurewebsites.net/explanation-report",
 ];
 
 // 4 visual steps
@@ -223,7 +223,7 @@ const Upload: FC = () => {
         }
 
         const completedCount = i + 1;
-        const newIndex = Math.min(completedCount, 3);
+        const newIndex = Math.min(completedCount, 4);
         setVisualStepIndex(newIndex);
       }
 
