@@ -1,3 +1,4 @@
+/* Root container for the Upload page */
 .upload-root {
   flex: 1;
   background-color: #f4f5f7;
@@ -6,6 +7,7 @@
   padding-block: 32px;
 }
 
+/* Container for the main content */
 .upload-container {
   max-width: 960px;
   width: 100%;
@@ -13,32 +15,35 @@
   padding-inline: 24px;
 }
 
-/* Breadcrumbs */
+/* Breadcrumbs for navigation */
 .upload-breadcrumbs {
   font-size: 12px;
   margin-bottom: 20px !important;
 }
 
-/* Title */
+/* Title of the page */
 .upload-title {
   font-weight: 700 !important;
   font-size: 28px !important;
   margin-bottom: 24px !important;
-  color: var(--primary-color);
+  color: #4a90e2;
+  /* Primary color */
 }
 
-/* Dropzone */
+/* Dropzone for file upload */
 .upload-dropzone {
   border-radius: 0 !important;
-  border: 2px solid var(--primary-color-light) !important;
-  background-color: var(--secondary-color) !important;
+  border: 2px solid #A9C9F5 !important;
+  /* Light blue border */
+  background-color: #f0f7ff !important;
+  /* Light blue background */
   min-height: 260px;
   margin-bottom: 24px;
   box-shadow: none !important;
   position: relative;
 }
 
-/* Inner content */
+/* Inner content inside the dropzone */
 .upload-dropzone-inner {
   height: 100%;
   padding: 48px 24px;
@@ -49,24 +54,25 @@
   text-align: center;
 }
 
-/* Icon */
+/* Icon style */
 .upload-icon {
   font-size: 48px !important;
-  color: var(--grey-600) !important;
+  color: #b0c0d1 !important;
+  /* Grey color for icon */
   margin-bottom: 16px;
 }
 
-/* Main text */
+/* Main text in the dropzone */
 .upload-main-text {
   font-size: 18px !important;
-  color: var(--grey-500) !important;
+  color: #717171 !important;
   margin-bottom: 8px !important;
 }
 
-/* "or" text */
+/* "or" separator text */
 .upload-or-text {
   font-size: 16px !important;
-  color: var(--grey-500) !important;
+  color: #717171 !important;
   margin-bottom: 12px !important;
 }
 
@@ -76,9 +82,12 @@
   border-radius: 999px !important;
   padding-inline: 20px !important;
   font-size: 16px !important;
+  background-color: #4a9fff !important;
+  /* Primary color */
+  color: white !important;
 }
 
-/* Hidden input */
+/* Hidden input field */
 .upload-file-input {
   display: none;
 }
@@ -95,20 +104,20 @@
   box-shadow: none !important;
 }
 
-/* Disabled state soft blue/grey */
+/* Disabled state for run button */
 .upload-run-btn.Mui-disabled {
   background-color: #bfdbfe !important;
   color: #e5e7eb !important;
 }
 
-/* Files count */
+/* Files count text */
 .upload-files-caption {
   display: block;
   margin-top: 8px;
   color: #6b7280 !important;
 }
 
-/* Responsive tweaks */
+/* Responsive styles */
 @media (max-width: 768px) {
   .upload-container {
     padding-inline: 16px;
@@ -120,5 +129,195 @@
 
   .upload-title {
     font-size: 24px !important;
+  }
+}
+
+/* Preview section styling */
+.upload-preview-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.upload-preview-label {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.upload-preview-image {
+  max-width: 100%;
+  max-height: 260px;
+  border-radius: 12px;
+  object-fit: contain;
+}
+
+.upload-preview-frame {
+  width: 100%;
+  height: 260px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.upload-preview-generic {
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px dashed #d1d5db;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.upload-change-btn {
+  text-transform: none !important;
+  font-size: 16px !important;
+}
+
+/* Proceed button styling */
+.upload-proceed-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.upload-proceed-btn {
+  text-transform: none !important;
+  border-radius: 999px !important;
+  padding-inline: 28px !important;
+  background-color: #4a9fff !important;
+  /* Primary color */
+  color: white !important;
+}
+
+/* Container for the stepper layout */
+.upload-stepper {
+  position: relative;
+  margin-top: 24px;
+  padding: 24px 60px 18px;
+  background: #ffffff;
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* Track background behind the step circles */
+.upload-stepper-track {
+  position: absolute;
+  top: 36px;
+  /* Aligns the track vertically with the circles */
+  left: 135px;
+  /* Space from the left edge */
+  right: 125px;
+  /* Space from the right edge */
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+  display: flex;
+}
+
+/* Blue progress fill */
+.upload-stepper-track-fill {
+  height: 100%;
+  background: #4a9fff;
+  /* Primary color for the active progress */
+  border-radius: inherit;
+}
+
+/* Circles row (horizontal layout) */
+.upload-stepper-circles-row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  position: relative;
+}
+
+/* Each circle wrapper so flex spacing matches labels */
+.upload-step-circle-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+/* Circle styles */
+.upload-step-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 2px solid #e5e7eb;
+  /* Border color */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  /* Grey color for inactive steps */
+  background: #f9fafb;
+  /* Background for inactive steps */
+  z-index: 1;
+  transition: background 0.3s ease, color 0.3s ease;
+  /* Smooth transition for active state */
+}
+
+/* Active and completed step circle styles */
+.upload-step-circle.active,
+.upload-step-circle.completed {
+  background: #4a9fff;
+  border-color: #4a9fff;
+  color: #ffffff;
+}
+
+/* Labels row (aligned below the circles) */
+.upload-stepper-label-row {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* Label text */
+.upload-step-title {
+  font-size: 15px;
+  color: #4b5563;
+  text-align: center;
+}
+
+.upload-step-title.active {
+  font-weight: 700;
+  color: #111827;
+}
+
+/* Insight download icon */
+.insight-download-icon {
+  margin-top: 4px;
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  border-radius: 999px !important;
+}
+
+.insight-download-icon svg {
+  color: #4a9fff;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .upload-stepper {
+    padding-inline: 32px;
+  }
+
+  .upload-step-circle {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+  }
+
+  .upload-step-title {
+    font-size: 12px;
   }
 }
