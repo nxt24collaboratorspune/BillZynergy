@@ -6,6 +6,7 @@ import {
     Button,
     Chip,
     CircularProgress,
+    IconButton
 } from "@mui/material";
 import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 import CheckIcon from "@mui/icons-material/Check";
@@ -13,7 +14,7 @@ import ReceiptLongOutlinedIcon from "@mui/icons-material/ReceiptLongOutlined";
 import ReportGmailerrorredOutlinedIcon from "@mui/icons-material/ReportGmailerrorredOutlined";
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
-import IconButton from "@mui/material/IconButton";
+import { CircularProgress as LoadingSpinner } from "@mui/material";
 
 import "./css/dashboard.css";
 
@@ -21,9 +22,9 @@ type HasDiscrepancy = "No Discrepancy" | "Discrepancy";
 
 interface InvoiceRow {
     counts?: number;
-    discrepancy_count?: number
-    reconcilation_count?: number
-    records?: Records[]
+    discrepancy_count?: number;
+    reconcilation_count?: number;
+    records?: Records[];
 }
 
 interface Records {
@@ -204,6 +205,7 @@ const Dashboard: React.FC = () => {
                         <Typography className="details-header-cell">Campaign Id</Typography>
                         <Typography className="details-header-cell right">Billed Cost</Typography>
                         <Typography className="details-header-cell right">Ad Cost</Typography>
+                        <Typography className="details-header-cell right">Media_budget</Typography>
                         <Typography className="details-header-cell right">Reconcilation Amount</Typography>
                         <Typography className="details-header-cell right">Status</Typography>
                         <Typography className="details-header-cell right">Preview</Typography>
@@ -225,6 +227,7 @@ const Dashboard: React.FC = () => {
                                 <Typography className="details-cell">{row.Campaign_Id}</Typography>
                                 <Typography className="details-cell right">{row.Billed_Cost}</Typography>
                                 <Typography className="details-cell right">{row.Ad_Cost}</Typography>
+                                <Typography className="details-cell right">{row.Media_budget}</Typography>
                                 <Typography className="details-cell right">{row.Reconcilation_Amount}</Typography>
                                 <Box className="details-cell right">
                                     <Chip size="small" label={status} className={`status-chip status-${status?.toLowerCase()}`} />

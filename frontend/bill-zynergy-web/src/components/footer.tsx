@@ -11,7 +11,7 @@ const Footer = () => {
         </Typography>
 
         <Typography variant="body2" className="footer-text">
-          Built for Agentic AI Hackathon 2025, Dentsu
+          Dentsu Global Services
         </Typography>
       </Box>
     </Box>

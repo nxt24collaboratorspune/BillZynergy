@@ -1,81 +1,109 @@
-/* Pricing Cards Layout */
-.pricing-card {
-  width: 45%;
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  background-color: #f4f6f9;
+/* Root container for pricing */
+.pricing-root {
+  max-width: 960px;
+  margin: 40px auto;
+  font-family: 'Roboto', sans-serif;
 }
 
-.pricing-card.premium {
-  background-color: #e1f5fe;
-}
-
+/* Header */
 .pricing-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+/* Container for both packages */
+.pricing-packages-container {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+/* Basic Package Styling */
+.pricing-basic-package {
+  background-color: var(--your-variable); /* Set a value for your variable */
+  padding: 10px;
+  border-radius: 8px;
+  flex: 1;
   text-align: center;
 }
 
-.pricing-header .MuiTypography-h5 {
-  font-weight: 700;
+/* Premium Package Styling */
+.pricing-premium-package {
+  background-color: #f9f0d9;
+  padding: 10px;
+  border-radius: 8px;
+  flex: 1;
+  border: 1px solid #5c58cd;
+  text-align: center;
 }
 
-.pricing-feature-list {
-  margin-top: 20px;
+/* Price Text */
+.pricing-price-text {
+  margin: 16px 0;
+  font-weight: bold;
+  font-size: 36px;
 }
 
-.pricing-feature-list > div {
-  margin-bottom: 10px;
+/* List Icon Color */
+.pricing-list-icon {
+  color: #2e4566;
 }
 
-.MuiTypography-body2 {
-  font-size: 14px;
-  display: inline-block;
-  margin-left: 8px;
-}
-
-.MuiButton-contained {
-  text-transform: none;
-  font-size: 16px;
-  padding: 12px;
+/* Premium Price Styling */
+.pricing-premium-price {
+  color: #38a9fa;
   font-weight: bold;
 }
 
-.MuiCheckbox-root {
-  padding: 0;
+/* Premium Package Image Container */
+.pricing-premium-image-container {
+  margin: 16px 0;
+  position: relative;
+  height: 120px;
+  overflow: hidden;
+  border-radius: 4px;
 }
 
-.MuiCheckbox-colorPrimary.Mui-checked {
-  color: #5c6bc0;
+/* Premium Image with Blur Effect */
+.pricing-premium-image {
+  width: 100%;
+  filter: blur(2px);
+  user-select: none;
 }
 
-.pricing-card .MuiTypography-h4 {
-  font-size: 2rem;
-  color: #5c6bc0;
-}
-
-.pricing-card .MuiButton-contained {
-  background-color: #5c6bc0;
-  color: #fff;
-  margin-top: 24px;
-}
-
-.pricing-card .MuiButton-contained:hover {
-  background-color: #3f51b5;
-}
-
-.pricing-card .MuiCard-root {
+/* Lock Icon Container */
+.pricing-lock-icon-container {
+  position: absolute;
+  top: 40%;
+  left: 45%;
+  background-color: #888e99;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
 }
 
-@media (max-width: 768px) {
-  .pricing-card {
-    width: 100%;
-    margin-bottom: 20px;
-  }
+/* Button Styling for Basic Package */
+.pricing-button-basic {
+  margin-top: 24px;
+  width: 100%;
+  padding: 12px 0;
+  font-weight: bold;
+}
 
-  .pricing-card .MuiTypography-h4 {
-    font-size: 1.5rem;
-  }
+/* Button Styling for Premium Package */
+.pricing-button-premium {
+  background-color: #38a9fa;
+  color: white;
+  margin-top: 24px;
+  width: 100%;
+  padding: 12px 0;
+  font-weight: bold;
+}
+
+/* Button Hover Effect for Premium Package */
+.pricing-button-premium:hover {
+  background-color: #2e4566;
 }

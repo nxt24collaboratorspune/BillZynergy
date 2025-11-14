@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 import CheckIcon from "@mui/icons-material/Check";
+import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import * as XLSX from "xlsx";
 
 import "./css/upload.css";
@@ -26,7 +27,7 @@ const pipelineUrls = [
   "https://app-billzynergy-backend-dev.azurewebsites.net/extract-file",
   "https://app-billzynergy-backend-dev.azurewebsites.net/matching",
   "https://app-billzynergy-backend-dev.azurewebsites.net/descripency",
-  "/api/complete",
+  "https://app-billzynergy-backend-dev.azurewebsites.net/explanation-report",
 ];
 
 // 4 visual steps
@@ -69,12 +70,21 @@ const Upload: FC = () => {
   const [textPreview, setTextPreview] = useState<string | null>(null); // txt
   const [csvPreview, setCsvPreview] = useState<string[][] | null>(null); // csv
   const [xlsxPreview, setXlsxPreview] = useState<string[][] | null>(null); // xlsx
+  const [insightDownloadUrl, setInsightDownloadUrl] = useState<string | null>(null);
+
+  const INSIGHT_STEP_INDEX = 3;
 
   // 0..3  (0 => first step active)
   const [visualStepIndex, setVisualStepIndex] = useState(0);
 
   const handleBrowseClick = () => {
     fileInputRef.current?.click();
+  };
+
+  const downloadFile = (htmlContent: string) => {
+    const blob = new Blob([htmlContent], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    setInsightDownloadUrl(url);
   };
 
   // line progress between steps (3 gaps → 0%, 33%, 66%, 100%)
@@ -161,7 +171,7 @@ const Upload: FC = () => {
     const fileList = event.target.files;
     const selected: File[] = fileList ? Array.from(fileList) : [];
     setFiles(selected);
-    setVisualStepIndex(0); // reset to first step
+    setVisualStepIndex(0);
   };
 
   const handleDrop = (event: DragEvent<HTMLDivElement>) => {
@@ -184,62 +194,50 @@ const Upload: FC = () => {
       if (fileArray.length === 0) return;
 
       setLoading(true);
-      setVisualStepIndex(0); // Step 1 active (Extract Files)
+      setVisualStepIndex(0);
 
-      // 1) Upload API (does NOT complete Step 1; only prepares the file)
       const uploadFormData = new FormData();
       uploadFormData.append("file", fileArray[0]);
 
-      const uploadRes = await fetch(
-        "https://app-billzynergy-backend-dev.azurewebsites.net/upload",
-        {
-          method: "POST",
-          body: uploadFormData,
-        }
-      );
+      const uploadRes = await fetch("https://app-billzynergy-backend-dev.azurewebsites.net/upload", {
+        method: "POST",
+        body: uploadFormData,
+      });
 
       if (uploadRes.status !== 200) {
-        throw new Error(
-          `Upload failed: ${uploadRes.status} ${uploadRes.statusText}`
-        );
+        throw new Error(`Upload failed: ${uploadRes.status} ${uploadRes.statusText}`);
       }
 
-      // NOTE: visualStepIndex stays 0 here → Step 1 active, not completed yet.
-      // Step 1 will be completed only when /extract-file (first pipeline call) succeeds.
-
-      // 2) Run 4 sequential pipeline APIs
       for (let i = 0; i < pipelineUrls.length; i++) {
         const url = pipelineUrls[i];
         const res = await fetch(url, { method: "GET" });
 
         if (res.status !== 200) {
-          throw new Error(
-            `Step failed: ${url} – ${res.status} ${res.statusText}`
-          );
+          throw new Error(`Step failed: ${url} – ${res.status} ${res.statusText}`);
         }
 
-        // Each successful pipeline call advances ONE step:
-        // i = 0 (/extract-file)   -> visualStepIndex = 1 (Step 1 completed, Step 2 active)
-        // i = 1 (/api/review)     -> visualStepIndex = 2 (Step 2 completed, Step 3 active)
-        // i = 2 (/api/reconcile)  -> visualStepIndex = 3 (Step 3 completed, Step 4 active)
-        // i = 3 (/api/complete)   -> still visualStepIndex = 3 (Step 4 active/final)
+        // Handle the final step (INSIGHT) which provides the downloadable HTML
+        if (i === INSIGHT_STEP_INDEX) {
+          const htmlContent = await res.text(); // Response is text (HTML)
+          downloadFile(htmlContent); // Trigger download after the final step
+        }
+
         const completedCount = i + 1;
-        const newIndex = Math.min(completedCount, steps.length - 1);
+        const newIndex = Math.min(completedCount, 3);
         setVisualStepIndex(newIndex);
       }
 
-      alert("All steps completed successfully!");
+      // alert("All steps completed successfully!");
     } catch (error) {
       console.error("Pipeline error:", error);
       alert("Something went wrong during reconciliation.");
-      // visualStepIndex stays at last successful step
     } finally {
       setLoading(false);
     }
   };
 
   const handleProceedClick = async () => {
-    if (files.length === 0 || loading) return;
+    if (files?.length === 0 || loading) return;
     await uploadAndRunPipeline(files);
   };
 
@@ -401,6 +399,21 @@ const Upload: FC = () => {
             {loading ? "Running AI Reconciliation..." : "Run AI Reconciliation"}
           </Button>
         </Box>
+
+        {insightDownloadUrl && (
+          <Box className="upload-proceed-wrapper">
+            <Button
+              variant="contained"
+              color="primary"
+              href={insightDownloadUrl}
+              download="invoice_discrepancy_report.html"
+              className="upload-proceed-btn"
+            >
+              <DownloadOutlinedIcon style={{ marginRight: "8px" }} />
+              Download Report
+            </Button>
+          </Box>
+        )}
 
         {/* Stepper */}
         <Box className="upload-stepper">
