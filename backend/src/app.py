@@ -7,9 +7,13 @@ from glob import glob
 from pathlib import Path
 import shutil
 from dotenv import load_dotenv
+import pandas as pd
 
 # INternal Imports
 from src.agent01_parser.data_parser import parser_agent
+from src.agent02.agent02 import agent02
+from src.agent03.agent03 import agent03
+from src.agent04.agent04 import agent04
 
 # Load ENV FIles
 load_dotenv()
@@ -95,6 +99,7 @@ def upload_file(file: UploadFile = File(...)):
             status_code=500
         )
 
+
 @app.get("/upload-contents")
 def get_upload_contents():
     """Get list of files and directories in the upload folder"""
@@ -155,6 +160,89 @@ def extract_file():
     except Exception as e:
         return JSONResponse(
             content={"error": str(e) + str(glob("./upload/*")[0])},
+            status_code=500
+        )
+
+
+@app.get("/matching")
+def matching():
+    """Extract a zip file"""
+    try:
+        # Funccall
+        df = agent02()
+
+        # Your logic here
+        return JSONResponse(
+            content={"message": "Success", "df": df},
+            status_code=200
+        )
+    except Exception as e:
+        return JSONResponse(
+            content={"error": str(e) + str(glob("./output/*")[0])},
+            status_code=500
+        )
+
+
+@app.get("/descripency")
+def descripency():
+    """Extract a zip file"""
+    try:
+        # Funccall
+        df = agent03()
+
+        # Your logic here
+        return JSONResponse(
+            content={"message": "Success", "df": df},
+            status_code=200
+        )
+    except Exception as e:
+        return JSONResponse(
+            content={"error": str(e) + str(glob("./output/*")[0])},
+            status_code=500
+        )
+
+
+@app.get("/explanation-report")
+def explanation_report():
+    try:
+        # Funccall
+        df = agent04()
+
+        # Your logic here
+        return JSONResponse(
+            content={"message": "Success", "df": df},
+            status_code=200
+        )
+    except Exception as e:
+        return JSONResponse(
+            content={"error": str(e) + str(glob("./output/*")[0])},
+            status_code=500
+        )
+
+
+@app.get("/audit_trail_agent")
+def audit_trail_agent():
+    pass
+
+
+@app.get("/show_discrepency_tbl")
+def show_discrepency_tbl():
+    """Extract a zip file"""
+    try:
+        # Funccall
+        df = pd.read_csv(
+            "./output/Discrepancy.csv"
+        ).to_html() if os.path.exists(
+            "./output/Discrepancy.csv") else pd.DataFrame().to_html()
+
+        # Your logic here
+        return JSONResponse(
+            content={"message": "Success", "df": df},
+            status_code=200
+        )
+    except Exception as e:
+        return JSONResponse(
+            content={"error": str(e) + str(glob("./output/*")[0])},
             status_code=500
         )
 

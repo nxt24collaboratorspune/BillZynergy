@@ -22,3 +22,5 @@ htmlcov/
 # Local data
 instance/
 upload/
+output/
+db_scripts/

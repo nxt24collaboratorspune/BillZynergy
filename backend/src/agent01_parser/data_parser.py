@@ -93,14 +93,11 @@ def parser_agent():
  
     review_task = Task(
         description="""You are reading the file located at {file_path} Using FileParser. Follow these steps:
+        KEEP THE CSV HEADER EXACTLY AS SPECIFIED if there are trailing space or : in header pls keep it.
     1. Use the FileParser tool to read the document and confirm the detected format.
-    2. Identify invoice-level metadata such as invoice number, vendor, billing period, currency, and total amounts. Leave fields blank rather than guessing.
-    3. Extract each spend line into a row with headers: Vendor Name, Vendor ID, Line Item Description, Placement, Start Date, End Date, Quantity, Rate, Amount, Currency, Notes.
-    4. Populate Vendor ID when it appears in the source; otherwise keep the column empty.
-    5. Keep numeric columns free of currency symbols, preserve original precision, and format dates as YYYY-MM-DD when available.
-    6. Emit RFC4180-compliant CSV text with a single header row followed by line entries.
-    7. Save output.csv and a metadata.json file (containing extraction summary, anomalies, and open questions) to {out_path} via FileWriterTool.
-    8. Return a concise status message or an error explanation if processing fails.""",
+    2. Emit RFC4180-compliant CSV text with a single header row followed by line entries.
+    3. Save output.csv and a metadata.json file (containing extraction summary, anomalies, and open questions) to {out_path} via FileWriterTool.
+    4. Return a concise status message or an error explanation if processing fails.""",
         expected_output="RFC4180-compliant CSV text with header row and one line per cost entry, plus metadata.json saved via FileWriterTool summarizing extraction decisions and unresolved questions.",
         agent=review_agent,        
     )
